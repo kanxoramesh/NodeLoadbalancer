@@ -1,33 +1,22 @@
 version: '3'
 services:
-  backend-1:
+  backend:
     build: ../app   
     hostname: server1
     environment:
       - APPID=5050 
+    deploy:
+     replicas: 3
+     restart_policy:
+       max_attempts: 3
+       condition: on-failure       
+     update_config:
+       parallelism: 3
+       delay: 10s
     networks:
       - loadbalancing
-  backend-2:
-    build: ../app   
-    hostname: server2
-    environment:
-      - APPID=5051 
-    networks:
-      - loadbalancing
-  backend-3:
-    build: ../app  
-    hostname: server3
-    environment:
-      - APPID=5052
-    networks:
-      - loadbalancing
-  backend-4:
-    build: ../app 
-    hostname: server4
-    environment:
-      - APPID=5053 
-    networks:
-      - loadbalancing
+      
+
 
   nginx:
     build: ../nginx
@@ -36,10 +25,7 @@ services:
     networks:
       - loadbalancing
     depends_on:
-      - backend-1
-      - backend-2
-      - backend-3
-      - backend-4
+      - backend
 
 networks:
   loadbalancing:

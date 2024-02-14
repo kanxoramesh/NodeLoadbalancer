@@ -3,8 +3,10 @@ services:
   backend:
     build: ../app   
     hostname: server1
-    environment:
-      - APPID=5050 
+    env_file:
+      - ../app/.env
+    # environment:
+    #   - PORT=5050 
     deploy:
      replicas: 3
      restart_policy:

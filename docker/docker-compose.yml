@@ -1,0 +1,45 @@
+version: '3'
+services:
+  backend-1:
+    build: ../app   
+    hostname: server1
+    environment:
+      - APPID=5050 
+    networks:
+      - loadbalancing
+  backend-2:
+    build: ../app   
+    hostname: server2
+    environment:
+      - APPID=5051 
+    networks:
+      - loadbalancing
+  backend-3:
+    build: ../app  
+    hostname: server3
+    environment:
+      - APPID=5052
+    networks:
+      - loadbalancing
+  backend-4:
+    build: ../app 
+    hostname: server4
+    environment:
+      - APPID=5053 
+    networks:
+      - loadbalancing
+
+  nginx:
+    build: ../nginx
+    ports:
+      - "4000:80"
+    networks:
+      - loadbalancing
+    depends_on:
+      - backend-1
+      - backend-2
+      - backend-3
+      - backend-4
+
+networks:
+  loadbalancing:

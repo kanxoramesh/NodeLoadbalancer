@@ -17,8 +17,6 @@ services:
        delay: 10s
     networks:
       - loadbalancing
-      
-
 
   nginx:
     build: ../nginx
@@ -29,5 +27,38 @@ services:
     depends_on:
       - backend
 
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    env_file:
+      - ../db/.postgres.env
+    ports:
+      - "${DB_PORT}:5432"
+    networks:
+      - loadbalancing
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  keycloak:
+    build: ../auth-service
+    command: ["start-dev", "--import-realm"]
+    env_file:
+      - ../auth-service/.keycloak.env
+    restart: unless-stopped   
+    ports:      
+      - "${KC_PORT}:8080"      
+    depends_on:      
+      - postgres
+    networks:
+      - loadbalancing  
+    volumes:
+      - keycloak-db-data:/var/lib/keycloak/data
+
 networks:
   loadbalancing:
+
+volumes:
+  postgres_data:
+  keycloak-db-data:
+    driver: local
